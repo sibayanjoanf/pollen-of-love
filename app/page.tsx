@@ -1,69 +1,95 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  CarouselApi,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+
+const flowers = [
+  { label: "Stargazer", image: "/cat-flowers/stargazer.png" },
+  { label: "Carnation", image: "/cat-flowers/carnation.png" },
+  { label: "Rose", image: "/cat-flowers/rose.png" },
+  { label: "Hydrangea", image: "/cat-flowers/hydrangea.png" },
+  { label: "Sunflower", image: "/cat-flowers/sunflower.png" },
+  { label: "Rose Lilies", image: "/cat-flowers/rose-lilies.png" },
+];
+
+export default function HomePage() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setSelectedIndex(api.selectedScrollSnap());
+    };
+
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main>
+      <div className="bg-[url('/bg-hero.png')] bg-cover bg-center">
+        {/* Header Section */}
+        <div className="flex justify-center items-center">
+          <p className="font-sarina text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-rose-300 mt-18">
+            Pollen of Love
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Flower Category Section */}
+        <div>
+          <Carousel
+            setApi={setApi}
+            className="mt-15 w-full select-none touch-pan-y"
+            opts={{ loop: true, align: "center" }}
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <CarouselContent className="py-8">
+              {flowers.map((link, index) => {
+                const isActive = index === selectedIndex;
+                return (
+                  <CarouselItem
+                    key={link.label}
+                    className="flex justify-center basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  >
+                    <Card
+                      className={`bg-transparent ring-0 transition-all duration-300 ease-out ${isActive ? "-translate-y-8" : "translate-y-0 opacity-70 scale-80"}`}
+                    >
+                      <CardContent className="flex flex-col justify-center items-center">
+                        <img
+                          src={link.image}
+                          className="h-90"
+                          draggable={false}
+                        />
+                        <p className="bg-rose-300 text-white p-3 mt-5 text-[16px] font-semibold rounded-sm">
+                          {link.label}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="bg-transparent border-none md:hidden lg:flex xl:hidden text-stone-900 hover:bg-rose-200/40 transition-all duration-300 ease-out cursor-pointer" />
+            <CarouselNext className="bg-transparent border-none md:hidden lg:flex xl:hidden text-stone-900 hover:bg-rose-200/40 transition-all duration-300 ease-out cursor-pointer" />
+          </Carousel>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Mini Bouquet Section */}
+      <div className="min-h-screen bg-rose-200">
+        <p className="w-full flex justify-end">Mini Bouquet Section</p>
+      </div>
+    </main>
   );
 }
