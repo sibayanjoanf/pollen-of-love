@@ -15,7 +15,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header>
+    <header className="fixed z-10">
       {/* Announcement Bar */}
       <div className="flex items-center justify-center min-w-screen h-8 bg-rose-300 text-white text-[12px] font-semibold">
         <p className="uppercase tracking-widest">Stay in Love, Bees!</p>
